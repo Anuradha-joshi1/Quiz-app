@@ -13,15 +13,31 @@ const questionsEl = document.getElementById("questions")!;
 
 const optionsEl = document.getElementById("options")!;
 const nextBtn = document.getElementById("nextBtn")! as HTMLButtonElement;
+const startBtn = document.getElementById("startBtn")! as HTMLButtonElement;
+
+questionsEl.style.display = "none";
+optionsEl.style.display = "none";
+nextBtn.style.display = "none";
+
+function showQuizUI() {
+  startBtn.style.display = "none";
+  questionsEl.style.display = "block";
+  optionsEl.style.display = "flex";
+  nextBtn.style.display = "inline-block";
+}
+
 
 function saveQuizState() {
   const state = {
     currentIndex,
     score,
-    selectedOption
+    selectedOption,
+    isQuizStarted: true
   };
   localStorage.setItem("quizState", JSON.stringify(state));
 }
+
+
 
 function loadQuizState() {
   const savedState = localStorage.getItem("quizState");
@@ -31,6 +47,12 @@ function loadQuizState() {
     currentIndex = state.currentIndex;
     score = state.score;
     selectedOption = state.selectedOption;
+
+     if (state.isQuizStarted) {
+      showQuizUI();
+      loadQuestions();
+      
+    }
   }
 }
 
@@ -40,11 +62,17 @@ fetch("questions.json")
   .then((data: Questions[]) => {
     questions = data;
      loadQuizState();
-    loadQuestions();
+   
   })
   .catch(error => {
     console.error("error loading questions :", error);
   })
+
+  startBtn.addEventListener("click", () => {
+  showQuizUI();
+  saveQuizState();
+  loadQuestions();
+});
 
 function handleOptionClick(
   index: number,
@@ -76,7 +104,7 @@ function renderOptions(options: string[]) {
 
 function loadQuestions() {
   selectedOption = null;
-
+  if (!questions[currentIndex]) return;
   const currentQuestion = questions[currentIndex];
   questionsEl.innerText = currentQuestion.question;
   renderOptions(currentQuestion.options);

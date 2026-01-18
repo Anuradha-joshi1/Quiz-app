@@ -7,7 +7,7 @@ body {
 {
     margin-top: 20px;
     padding: 10px 25px;
-    font-size: 10px;
+    font-size: 16px;
     font-weight: bold;
     background-color: blue;
     color: aliceblue;
@@ -37,4 +37,15 @@ body {
 #options button.selected {
   background-color: #e0f2fe;  
   border: 2px solid yellowgreen;
+}
+#startBtn{
+   margin-top: 20px;
+    padding: 10px 25px;
+    font-size: 16px;
+    font-weight: bold;
+    background-color: blue;
+    color: aliceblue;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
 }

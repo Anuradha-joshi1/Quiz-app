@@ -6,11 +6,22 @@ var questions = [];
 var questionsEl = document.getElementById("questions");
 var optionsEl = document.getElementById("options");
 var nextBtn = document.getElementById("nextBtn");
+var startBtn = document.getElementById("startBtn");
+questionsEl.style.display = "none";
+optionsEl.style.display = "none";
+nextBtn.style.display = "none";
+function showQuizUI() {
+    startBtn.style.display = "none";
+    questionsEl.style.display = "block";
+    optionsEl.style.display = "flex";
+    nextBtn.style.display = "inline-block";
+}
 function saveQuizState() {
     var state = {
         currentIndex: currentIndex,
         score: score,
-        selectedOption: selectedOption
+        selectedOption: selectedOption,
+        isQuizStarted: true
     };
     localStorage.setItem("quizState", JSON.stringify(state));
 }
@@ -21,6 +32,10 @@ function loadQuizState() {
         currentIndex = state.currentIndex;
         score = state.score;
         selectedOption = state.selectedOption;
+        if (state.isQuizStarted) {
+            showQuizUI();
+            loadQuestions();
+        }
     }
 }
 fetch("questions.json")
@@ -28,10 +43,14 @@ fetch("questions.json")
     .then(function (data) {
     questions = data;
     loadQuizState();
-    loadQuestions();
 })
     .catch(function (error) {
     console.error("error loading questions :", error);
+});
+startBtn.addEventListener("click", function () {
+    showQuizUI();
+    saveQuizState();
+    loadQuestions();
 });
 function handleOptionClick(index, button) {
     selectedOption = index;
@@ -52,6 +71,8 @@ function renderOptions(options) {
 }
 function loadQuestions() {
     selectedOption = null;
+    if (!questions[currentIndex])
+        return;
     var currentQuestion = questions[currentIndex];
     questionsEl.innerText = currentQuestion.question;
     renderOptions(currentQuestion.options);
