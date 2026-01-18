@@ -16,12 +16,35 @@ function showQuizUI() {
     optionsEl.style.display = "flex";
     nextBtn.style.display = "inline-block";
 }
+function handleOptionClick(index, button) {
+    selectedOption = index;
+    var allButtons = optionsEl.querySelectorAll("button");
+    allButtons.forEach(function (btn) { return btn.classList.remove("selected"); });
+    button.classList.add("selected");
+}
+function renderOptions(options) {
+    optionsEl.innerHTML = "";
+    options.forEach(function (option, index) {
+        var btn = document.createElement("button");
+        btn.innerText = option;
+        btn.addEventListener("click", function () { return handleOptionClick(index, btn); });
+        optionsEl.append(btn);
+    });
+}
+function loadQuestions() {
+    selectedOption = null;
+    if (!questions[currentIndex])
+        return;
+    var currentQuestion = questions[currentIndex];
+    questionsEl.innerText = currentQuestion.question;
+    renderOptions(currentQuestion.options);
+}
 function saveQuizState() {
     var state = {
         currentIndex: currentIndex,
         score: score,
         selectedOption: selectedOption,
-        isQuizStarted: true
+        isQuizStarted: true,
     };
     localStorage.setItem("quizState", JSON.stringify(state));
 }
@@ -38,45 +61,11 @@ function loadQuizState() {
         }
     }
 }
-fetch("questions.json")
-    .then(function (response) { return response.json(); })
-    .then(function (data) {
-    questions = data;
-    loadQuizState();
-})
-    .catch(function (error) {
-    console.error("error loading questions :", error);
-});
 startBtn.addEventListener("click", function () {
     showQuizUI();
     saveQuizState();
     loadQuestions();
 });
-function handleOptionClick(index, button) {
-    selectedOption = index;
-    var allButtons = optionsEl.querySelectorAll("button");
-    allButtons.forEach(function (btn) { return btn.classList.remove("selected"); });
-    button.classList.add("selected");
-}
-function renderOptions(options) {
-    optionsEl.innerHTML = "";
-    options.forEach(function (option, index) {
-        var btn = document.createElement("button");
-        btn.innerText = option;
-        btn.addEventListener("click", function () {
-            return handleOptionClick(index, btn);
-        });
-        optionsEl.append(btn);
-    });
-}
-function loadQuestions() {
-    selectedOption = null;
-    if (!questions[currentIndex])
-        return;
-    var currentQuestion = questions[currentIndex];
-    questionsEl.innerText = currentQuestion.question;
-    renderOptions(currentQuestion.options);
-}
 nextBtn.addEventListener("click", function () {
     if (selectedOption === null) {
         var confirmSkip = confirm("You haven't selected any answer. Do you want to skip this question?");
@@ -97,6 +86,15 @@ nextBtn.addEventListener("click", function () {
     else {
         showResult();
     }
+});
+fetch("questions.json")
+    .then(function (response) { return response.json(); })
+    .then(function (data) {
+    questions = data;
+    loadQuizState();
+})
+    .catch(function (error) {
+    questionsEl.innerText = "Failed to load questions. Please try again later.";
 });
 function showResult() {
     questionsEl.innerText = "Quiz Completed!!";

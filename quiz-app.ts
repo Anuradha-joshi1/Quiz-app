@@ -8,9 +8,7 @@ let score: number = 0;
 let selectedOption: number | null = null;
 
 let questions: Questions[] = [];
-
 const questionsEl = document.getElementById("questions")!;
-
 const optionsEl = document.getElementById("options")!;
 const nextBtn = document.getElementById("nextBtn")! as HTMLButtonElement;
 const startBtn = document.getElementById("startBtn")! as HTMLButtonElement;
@@ -26,18 +24,46 @@ function showQuizUI() {
   nextBtn.style.display = "inline-block";
 }
 
+function handleOptionClick(index: number, button: HTMLButtonElement) {
+  selectedOption = index;
+
+  const allButtons = optionsEl.querySelectorAll("button");
+  allButtons.forEach((btn) => btn.classList.remove("selected"));
+
+  button.classList.add("selected");
+}
+function renderOptions(options: string[]) {
+  optionsEl.innerHTML = "";
+
+  options.forEach((option, index) => {
+    const btn = document.createElement("button");
+    btn.innerText = option;
+
+    btn.addEventListener("click", () => handleOptionClick(index, btn));
+
+    optionsEl.append(btn);
+  });
+}
+
+function loadQuestions() {
+  selectedOption = null;
+  if (!questions[currentIndex]) return;
+  const currentQuestion = questions[currentIndex];
+  questionsEl.innerText = currentQuestion.question;
+  renderOptions(currentQuestion.options);
+}
+
+
 
 function saveQuizState() {
   const state = {
     currentIndex,
     score,
     selectedOption,
-    isQuizStarted: true
+    isQuizStarted: true,
   };
   localStorage.setItem("quizState", JSON.stringify(state));
 }
-
-
 
 function loadQuizState() {
   const savedState = localStorage.getItem("quizState");
@@ -48,84 +74,33 @@ function loadQuizState() {
     score = state.score;
     selectedOption = state.selectedOption;
 
-     if (state.isQuizStarted) {
+    if (state.isQuizStarted) {
       showQuizUI();
       loadQuestions();
-      
     }
   }
 }
 
-
-fetch("questions.json")
-  .then(response => response.json())
-  .then((data: Questions[]) => {
-    questions = data;
-     loadQuizState();
-   
-  })
-  .catch(error => {
-    console.error("error loading questions :", error);
-  })
-
-  startBtn.addEventListener("click", () => {
+startBtn.addEventListener("click", () => {
   showQuizUI();
   saveQuizState();
   loadQuestions();
 });
 
-function handleOptionClick(
-  index: number,
-  button: HTMLButtonElement
-) {
-  selectedOption = index;
-
-  const allButtons = optionsEl.querySelectorAll("button");
-  allButtons.forEach(btn => btn.classList.remove("selected"));
-
-  button.classList.add("selected");
-}
-
-function renderOptions(options: string[]) {
-  optionsEl.innerHTML = "";
-
-  options.forEach((option, index) => {
-    const btn = document.createElement("button");
-    btn.innerText = option;
-
-    btn.addEventListener("click", () =>
-      handleOptionClick(index, btn)
-    );
-
-    optionsEl.append(btn);
-  });
-}
-
-
-function loadQuestions() {
-  selectedOption = null;
-  if (!questions[currentIndex]) return;
-  const currentQuestion = questions[currentIndex];
-  questionsEl.innerText = currentQuestion.question;
-  renderOptions(currentQuestion.options);
-}
 nextBtn.addEventListener("click", () => {
-
   if (selectedOption === null) {
     const confirmSkip = confirm(
-      "You haven't selected any answer. Do you want to skip this question?"
+      "You haven't selected any answer. Do you want to skip this question?",
     );
 
     if (!confirmSkip) {
       return;
     }
   } else {
-
     if (selectedOption === questions[currentIndex].answer) {
       score++;
     }
   }
-
   currentIndex++;
   saveQuizState();
 
@@ -136,6 +111,15 @@ nextBtn.addEventListener("click", () => {
   }
 });
 
+fetch("questions.json")
+  .then((response) => response.json())
+  .then((data: Questions[]) => {
+    questions = data;
+    loadQuizState();
+  })
+  .catch((error) => {
+    questionsEl.innerText = "Failed to load questions. Please try again later.";
+  });
 
 function showResult() {
   questionsEl.innerText = "Quiz Completed!!";
@@ -158,5 +142,3 @@ function showResult() {
   nextBtn.style.display = "none";
   localStorage.removeItem("quizState");
 }
-
-
