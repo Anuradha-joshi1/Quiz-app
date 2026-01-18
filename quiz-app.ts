@@ -14,10 +14,32 @@ const questionsEl = document.getElementById("questions")!;
 const optionsEl = document.getElementById("options")!;
 const nextBtn = document.getElementById("nextBtn")! as HTMLButtonElement;
 
+function saveQuizState() {
+  const state = {
+    currentIndex,
+    score,
+    selectedOption
+  };
+  localStorage.setItem("quizState", JSON.stringify(state));
+}
+
+function loadQuizState() {
+  const savedState = localStorage.getItem("quizState");
+
+  if (savedState) {
+    const state = JSON.parse(savedState);
+    currentIndex = state.currentIndex;
+    score = state.score;
+    selectedOption = state.selectedOption;
+  }
+}
+
+
 fetch("questions.json")
   .then(response => response.json())
   .then((data: Questions[]) => {
     questions = data;
+     loadQuizState();
     loadQuestions();
   })
   .catch(error => {
@@ -77,6 +99,7 @@ nextBtn.addEventListener("click", () => {
   }
 
   currentIndex++;
+  saveQuizState();
 
   if (currentIndex < questions.length) {
     loadQuestions();
@@ -105,6 +128,7 @@ function showResult() {
   `;
 
   nextBtn.style.display = "none";
+  localStorage.removeItem("quizState");
 }
 
 
