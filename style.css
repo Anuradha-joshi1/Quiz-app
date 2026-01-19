@@ -1,0 +1,76 @@
+body {
+  font-family: Arial;
+  text-align: center;
+  background-color: cadetblue;
+}
+
+#nextBtn
+{
+    margin-top: 20px;
+    padding: 10px 25px;
+    font-size: 16px;
+    font-weight: bold;
+    background-color: blue;
+    color: aliceblue;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+}
+
+#nextBtn:hover{
+    background-color:#4338CA;
+}
+
+#options {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); 
+  gap: 15px;
+  margin: 20px auto;     
+  max-width: 650px;   
+}   
+
+#options button {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+
+#options button.selected {
+  background-color: #e0f2fe;  
+  border: 2px solid yellowgreen;
+}
+#startBtn{
+   margin-top: 20px;
+    padding: 10px 25px;
+    font-size: 16px;
+    font-weight: bold;
+    background-color: blue;
+    color: aliceblue;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+}
+#skipBtn{
+   margin-top: 20px;
+    padding: 10px 25px;
+    font-size: 16px;
+    font-weight: bold;
+    background-color:  #F59E0B;
+    color: aliceblue;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+}
+#submitBtn{
+  margin-top: 20px;
+    padding: 10px 25px;
+    font-size: 16px;
+    font-weight: bold;
+    background-color:green;
+    color: white;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+}

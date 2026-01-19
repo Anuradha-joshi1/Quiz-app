@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "target": "ES5",
+    "outDir": "./",
+    "strict": true
+  },
+  "include": ["*.ts"],
+   "exclude": []
+}
+

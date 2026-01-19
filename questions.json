@@ -1,0 +1,42 @@
+[
+  {
+    "question": " 1.What is the default type of a variable in TypeScript if no type is specified?",
+    "options": ["any", "string", "number", "unknown"],
+    "answer": 0
+  },
+  {
+    "question": "2.Which command is used to compile TypeScript?",
+    "options": ["node", "npm", "tsc", "ts-node"],
+    "answer": 2
+  },
+  {
+    "question": "3.Which keyword is used to define a type in TypeScript?",
+    "options": ["interface", "type", "define", "struct"],
+    "answer": 1
+  },
+  {
+     "question": "4.What command is used to install TypeScript globally using npm?",
+    "options": ["npm install typescript", "npm install -g typescript", "install -g typescript", "npm typescript install"],
+    "answer": 1
+  },
+  {
+    "question":"5.Which of the following is NOT a valid TypeScript type?",
+    "options":["number","boolean","character","unknown"],
+    "answer":2
+  },
+  {
+    "question":"6.Which TypeScript feature allows defining a custom structure for objects?",
+    "options":["Classes","Interfaces","Functions","Enums"],
+    "answer":1
+  },
+  {
+     "question":"7.Which of the following is true about TypeScript?",
+    "options":["TypeScript code runs directly in the browser","TypeScript must be compiled into JavaScript","TypeScript does not support JavaScript features","TypeScript cannot be used in frontend development"],
+    "answer":1
+  },
+  {
+     "question":"8.How do you compile a TypeScript file named script.ts?",
+    "options":["tsc script.ts","node script.ts","compile script.ts","typescript script.ts"],
+    "answer":0
+  }
+]
