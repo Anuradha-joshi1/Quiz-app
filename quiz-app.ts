@@ -8,20 +8,37 @@ let score: number = 0;
 let selectedOption: number | null = null;
 
 let questions: Questions[] = [];
+const progressEl = document.getElementById("progress")!;
 const questionsEl = document.getElementById("questions")!;
 const optionsEl = document.getElementById("options")!;
 const nextBtn = document.getElementById("nextBtn")! as HTMLButtonElement;
 const startBtn = document.getElementById("startBtn")! as HTMLButtonElement;
+const skipBtn = document.getElementById("skipBtn")! as HTMLButtonElement;
+const submitBtn = document.getElementById("submitBtn")! as HTMLButtonElement;
 
 questionsEl.style.display = "none";
 optionsEl.style.display = "none";
 nextBtn.style.display = "none";
+skipBtn.style.display = "none";
+progressEl.style.display = "none";
+submitBtn.style.display = "none";
+
+function updateProgress() {
+  const total = questions.length;
+  const current = currentIndex + 1;
+  const left = total - current;
+
+  progressEl.innerText = `${left} questions left`;
+}
 
 function showQuizUI() {
   startBtn.style.display = "none";
   questionsEl.style.display = "block";
-  optionsEl.style.display = "flex";
+  optionsEl.style.display = "grid";
   nextBtn.style.display = "inline-block";
+  skipBtn.style.display = "inline-block";
+  submitBtn.style.display = "inline-block";
+  progressEl.style.display = "block";
 }
 
 function handleOptionClick(index: number, button: HTMLButtonElement) {
@@ -48,12 +65,25 @@ function renderOptions(options: string[]) {
 function loadQuestions() {
   selectedOption = null;
   if (!questions[currentIndex]) return;
+
   const currentQuestion = questions[currentIndex];
   questionsEl.innerText = currentQuestion.question;
   renderOptions(currentQuestion.options);
+  updateProgress();
+
+  if (currentIndex === questions.length - 1) {
+    nextBtn.style.display = "none";
+    skipBtn.disabled = true;
+    skipBtn.style.opacity = "0.5";
+    skipBtn.style.cursor = "not-allowed";
+  } else {
+    nextBtn.style.display = "inline-block";
+
+    skipBtn.disabled = false;
+    skipBtn.style.opacity = "1";
+    skipBtn.style.cursor = "pointer";
+  }
 }
-
-
 
 function saveQuizState() {
   const state = {
@@ -89,24 +119,39 @@ startBtn.addEventListener("click", () => {
 
 nextBtn.addEventListener("click", () => {
   if (selectedOption === null) {
-    const confirmSkip = confirm(
-      "You haven't selected any answer. Do you want to skip this question?",
-    );
-
-    if (!confirmSkip) {
-      return;
-    }
-  } else {
-    if (selectedOption === questions[currentIndex].answer) {
-      score++;
-    }
+    alert("Please select an option before clicking Next");
+    return;
   }
+
+  if (selectedOption === questions[currentIndex].answer) {
+    score++;
+  }
+
   currentIndex++;
   saveQuizState();
 
   if (currentIndex < questions.length) {
     loadQuestions();
   } else {
+    showResult();
+  }
+});
+
+skipBtn.addEventListener("click", () => {
+  currentIndex++;
+  selectedOption = null;
+  saveQuizState();
+
+  if (currentIndex < questions.length) {
+    loadQuestions();
+  } else {
+    showResult();
+  }
+});
+submitBtn.addEventListener("click", () => {
+  const confirmSubmit = confirm("Do you want to submit the quiz?");
+
+  if (confirmSubmit) {
     showResult();
   }
 });
@@ -140,5 +185,10 @@ function showResult() {
   `;
 
   nextBtn.style.display = "none";
+  skipBtn.style.display = "none";
+  submitBtn.style.display = "none";
+
+  progressEl.style.display = "none";
+
   localStorage.removeItem("quizState");
 }

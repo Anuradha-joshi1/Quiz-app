@@ -5,6 +5,7 @@ The app allows users to answer multiple-choice questions, skip questions with co
 
 
 
+
 ##  Features
 
 -  Questions loaded from a JSON file

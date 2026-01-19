@@ -3,18 +3,33 @@ var currentIndex = 0;
 var score = 0;
 var selectedOption = null;
 var questions = [];
+var progressEl = document.getElementById("progress");
 var questionsEl = document.getElementById("questions");
 var optionsEl = document.getElementById("options");
 var nextBtn = document.getElementById("nextBtn");
 var startBtn = document.getElementById("startBtn");
+var skipBtn = document.getElementById("skipBtn");
+var submitBtn = document.getElementById("submitBtn");
 questionsEl.style.display = "none";
 optionsEl.style.display = "none";
 nextBtn.style.display = "none";
+skipBtn.style.display = "none";
+progressEl.style.display = "none";
+submitBtn.style.display = "none";
+function updateProgress() {
+    var total = questions.length;
+    var current = currentIndex + 1;
+    var left = total - current;
+    progressEl.innerText = "".concat(left, " questions left");
+}
 function showQuizUI() {
     startBtn.style.display = "none";
     questionsEl.style.display = "block";
-    optionsEl.style.display = "flex";
+    optionsEl.style.display = "grid";
     nextBtn.style.display = "inline-block";
+    skipBtn.style.display = "inline-block";
+    submitBtn.style.display = "inline-block";
+    progressEl.style.display = "block";
 }
 function handleOptionClick(index, button) {
     selectedOption = index;
@@ -38,6 +53,19 @@ function loadQuestions() {
     var currentQuestion = questions[currentIndex];
     questionsEl.innerText = currentQuestion.question;
     renderOptions(currentQuestion.options);
+    updateProgress();
+    if (currentIndex === questions.length - 1) {
+        nextBtn.style.display = "none";
+        skipBtn.disabled = true;
+        skipBtn.style.opacity = "0.5";
+        skipBtn.style.cursor = "not-allowed";
+    }
+    else {
+        nextBtn.style.display = "inline-block";
+        skipBtn.disabled = false;
+        skipBtn.style.opacity = "1";
+        skipBtn.style.cursor = "pointer";
+    }
 }
 function saveQuizState() {
     var state = {
@@ -68,15 +96,11 @@ startBtn.addEventListener("click", function () {
 });
 nextBtn.addEventListener("click", function () {
     if (selectedOption === null) {
-        var confirmSkip = confirm("You haven't selected any answer. Do you want to skip this question?");
-        if (!confirmSkip) {
-            return;
-        }
+        alert("Please select an option before clicking Next");
+        return;
     }
-    else {
-        if (selectedOption === questions[currentIndex].answer) {
-            score++;
-        }
+    if (selectedOption === questions[currentIndex].answer) {
+        score++;
     }
     currentIndex++;
     saveQuizState();
@@ -84,6 +108,23 @@ nextBtn.addEventListener("click", function () {
         loadQuestions();
     }
     else {
+        showResult();
+    }
+});
+skipBtn.addEventListener("click", function () {
+    currentIndex++;
+    selectedOption = null;
+    saveQuizState();
+    if (currentIndex < questions.length) {
+        loadQuestions();
+    }
+    else {
+        showResult();
+    }
+});
+submitBtn.addEventListener("click", function () {
+    var confirmSubmit = confirm("Do you want to submit the quiz?");
+    if (confirmSubmit) {
         showResult();
     }
 });
@@ -110,5 +151,8 @@ function showResult() {
     }
     optionsEl.innerHTML = "\n    <h3>Your Score: ".concat(score, " / ").concat(questions.length, "</h3>\n    <p>").concat(message, "</p>\n  ");
     nextBtn.style.display = "none";
+    skipBtn.style.display = "none";
+    submitBtn.style.display = "none";
+    progressEl.style.display = "none";
     localStorage.removeItem("quizState");
 }
